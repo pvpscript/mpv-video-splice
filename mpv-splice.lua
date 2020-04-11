@@ -2,7 +2,7 @@
 --
 -- MPV Splice
 -- Version: 1.0.0
--- URL: https://github.com/pvpscript/mpv-video-splice
+-- URL:
 --
 -- Requires: ffmpeg
 --
@@ -71,12 +71,12 @@
 local mp = require 'mp'
 local msg = require 'mp.msg'
 
-times = {}
-start_time = nil
+local times = {}
+local start_time = nil
 
-concat_name = "concat.txt"
+local concat_name = "concat.txt"
 
-ffmpeg = "ffmpeg -hide_banner -loglevel warning -y"
+local ffmpeg = "ffmpeg -hide_banner -loglevel warning"
 
 function notify(duration, ...)
 	local args = {...}
@@ -132,6 +132,9 @@ function cut()
 	local rnd_size = 10
 
 	local pieces = {}
+
+	math.randomseed(os.time())
+	math.random(); math.random(); math.random()
 
 	if times[#times] and times[#times].t_end then
 		local tmp_dir = io.popen("mktemp -d -t XXXXXXXXXX"):read("*l")
