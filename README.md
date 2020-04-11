@@ -1,6 +1,8 @@
 # mpv-video-splice
 An mpv player script that helps you create a video out of cuts made in the current playing video.
 
+**Requires: ffmpeg**
+
 ## Description
 This script provides the hability to create video slices by grabbing two
 timestamps, which generate a slice from timestamp A[i] to timestamp B[i],
