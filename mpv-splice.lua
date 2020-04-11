@@ -9,17 +9,17 @@
 -- Description:
 --
 -- This script provides the hability to create video slices by grabbing two
--- timestamps, which generate a slice from timestamp Ai to timestamp Bi,
+-- timestamps, which generate a slice from timestamp A[i] to timestamp B[i],
 -- e.g.:
 -- 	-> Slice 1: 00:10:34.25 -> 00:15:00.00.
 -- 	-> Slice 2: 00:23:00.84 -> 00:24:10.00.
 -- 	...
 -- 	-> Slice n: 01:44:22.47 -> 01:56:00.00.
 --
--- Then, all the slices, from 1 to n are joined together, creating a new
+-- Then, all the slices from 1 to n are joined together, creating a new
 -- video.
 --
--- The output file will appear in the directory that the mpv command was ran.
+-- The output file will appear at the directory that the mpv command was ran.
 --
 -- Note: This script prevents the mpv player from closing when the video ends,
 -- so that the slices don't get lost. Keep this in mind if there's the option
