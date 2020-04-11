@@ -176,6 +176,9 @@ function cut()
 
 		notify(10000, "File saved as: ", output_file)
 		msg.info("Process ended!")
+
+		os.execute(string.format("rm -rf %s", tmp_dir))
+		msg.info("Temporary directory removed!")
 	end
 end
 
