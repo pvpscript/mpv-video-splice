@@ -5,6 +5,6 @@ An mpv player script that helps you create a video out of cuts made in another v
 
 ## Usage
 
-### Log Level
+## Log Level
 
 # Installation
