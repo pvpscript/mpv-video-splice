@@ -1,5 +1,5 @@
 # mpv-video-splice
-An mpv player script that helps you to create a video out of cuts made in another video.
+An mpv player script that helps you create a video out of cuts made in another video.
 
 ## Description
 
