@@ -127,7 +127,7 @@ function show_times()
 	end
 end
 
-function cut()
+function process_video()
 	local alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 	local rnd_size = 10
 
@@ -163,7 +163,7 @@ function cut()
 			cat_file_ptr:write(string.format("file '%s'\n", path))
 			os.execute(string.format("%s %s %s %s %s %s %s %s",
 				ffmpeg, "-i", input_file,
-				"-ss", obj.t_start, "-to ", obj.t_end,
+				"-ss", obj.t_start, "-to", obj.t_end,
 				path))
 		end
 
@@ -186,4 +186,4 @@ mp.set_property("keep-open", "yes") -- Prevent mpv from exiting when the video e
 
 mp.add_key_binding('Alt+t', "put_time", put_time)
 mp.add_key_binding('Alt+p', "show_times", show_times)
-mp.add_key_binding('Alt+c', "cut_file", cut)
+mp.add_key_binding('Alt+c', "process_video", process_video)
