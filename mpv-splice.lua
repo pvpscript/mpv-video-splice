@@ -2,7 +2,7 @@
 --
 -- MPV Splice
 -- Version: 1.0.0
--- URL:
+-- URL: https://github.com/pvpscript/mpv-video-splice
 --
 -- Requires: ffmpeg
 --
