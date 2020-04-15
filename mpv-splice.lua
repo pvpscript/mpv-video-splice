@@ -137,7 +137,7 @@ function process_video()
 	math.random(); math.random(); math.random()
 
 	if times[#times] and times[#times].t_end then
-		local tmp_dir = io.popen("mktemp -d -t XXXXXXXXXX"):read("*l")
+		local tmp_dir = io.popen("mktemp -d"):read("*l")
 		local input_file = mp.get_property("path")
 		local ext = string.gmatch(input_file, ".*%.(.*)$")()
 
