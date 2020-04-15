@@ -91,7 +91,7 @@ function notify(duration, ...)
 		text, duration))
 end
 
-function get_time()
+local function get_time()
 	local time_in_secs = mp.get_property_number('time-pos')
 
 	local hours = math.floor(time_in_secs / 3600)
@@ -136,7 +136,7 @@ function process_video()
 	math.randomseed(os.time())
 	math.random(); math.random(); math.random()
 
-	if times[#times] and times[#times].t_end then
+	if times[#times] then
 		local tmp_dir = io.popen("mktemp -d"):read("*l")
 		local input_file = mp.get_property("path")
 		local ext = string.gmatch(input_file, ".*%.(.*)$")()
