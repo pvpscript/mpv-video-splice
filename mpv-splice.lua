@@ -1,7 +1,6 @@
 -- -----------------------------------------------------------------------------
 --
 -- MPV Splice
--- Version: 1.0.0
 -- URL: https://github.com/pvpscript/mpv-video-splice
 --
 -- Requires: ffmpeg
@@ -68,15 +67,28 @@
 --
 -- -----------------------------------------------------------------------------
 
+--------------------------------------------------------------------------------
+-- Importing the mpv libraries
+
 local mp = require 'mp'
 local msg = require 'mp.msg'
 
+--------------------------------------------------------------------------------
+-- Those variables below can be tweaked at your will, but make sure you know
+-- what you are doing.
+
+local tmp_location = "/tmp"
+
+--------------------------------------------------------------------------------
+-- Don't make changes in the variables below, unless you are ABSOLUTELY sure
+-- about how they work and want to make changes to the script's code.
+
+local concat_name = "concat.txt"
+local ffmpeg = "ffmpeg -hide_banner -loglevel warning"
 local times = {}
 local start_time = nil
 
-local concat_name = "concat.txt"
-
-local ffmpeg = "ffmpeg -hide_banner -loglevel warning"
+--------------------------------------------------------------------------------
 
 function notify(duration, ...)
 	local args = {...}
@@ -137,7 +149,8 @@ function process_video()
 	math.random(); math.random(); math.random()
 
 	if times[#times] then
-		local tmp_dir = io.popen("mktemp -d"):read("*l")
+		local tmp_dir = io.popen(string.format("mktemp -d -p %s",
+			tmp_location)):read("*l")
 		local input_file = mp.get_property("path")
 		local ext = string.gmatch(input_file, ".*%.(.*)$")()
 
@@ -161,17 +174,16 @@ function process_video()
 			local path = string.format("%s/%s_%d.%s",
 				tmp_dir, rnd_str, i, ext)
 			cat_file_ptr:write(string.format("file '%s'\n", path))
-			os.execute(string.format("%s %s \"%s\" %s %s %s %s \"%s\"",
-				ffmpeg, "-i", input_file,
-				"-ss", obj.t_start, "-to", obj.t_end,
+			os.execute(string.format("%s -i \"%s\" -ss %s -to %s \"%s\"",
+				ffmpeg, input_file,
+				obj.t_start, obj.t_end,
 				path))
 		end
 
 		cat_file_ptr:close()
 
-		cmd = string.format("%s %s \"%s\" %s \"%s\"",
-			ffmpeg, "-f concat -safe 0 -i", cat_file_name,
-			"-c copy", output_file)
+		cmd = string.format("%s -f concat -safe 0 -i \"%s\" -c copy \"%s\"",
+			ffmpeg, cat_file_name, output_file)
 		os.execute(cmd)
 
 		notify(10000, "File saved as: ", output_file)
