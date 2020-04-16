@@ -151,7 +151,7 @@ function process_video()
 			mp.get_property("working-directory"),
 			mp.get_property("filename/no-ext"),
 			rnd_str, ext)
-		
+
 		local cat_file_name = string.format("%s/%s", tmp_dir, "concat.txt")
 		local cat_file_ptr = io.open(cat_file_name, "w")
 
@@ -161,7 +161,7 @@ function process_video()
 			local path = string.format("%s/%s_%d.%s",
 				tmp_dir, rnd_str, i, ext)
 			cat_file_ptr:write(string.format("file '%s'\n", path))
-			os.execute(string.format("%s %s %s %s %s %s %s %s",
+			os.execute(string.format("%s %s \"%s\" %s %s %s %s \"%s\"",
 				ffmpeg, "-i", input_file,
 				"-ss", obj.t_start, "-to", obj.t_end,
 				path))
@@ -169,7 +169,7 @@ function process_video()
 
 		cat_file_ptr:close()
 
-		cmd = string.format("%s %s %s %s %s",
+		cmd = string.format("%s %s \"%s\" %s \"%s\"",
 			ffmpeg, "-f concat -safe 0 -i", cat_file_name,
 			"-c copy", output_file)
 		os.execute(cmd)
