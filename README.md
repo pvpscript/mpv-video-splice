@@ -53,6 +53,15 @@ that the process ended.
 
 **Note:** Every message that appears on the terminal has the **log level of 'info'**.
 
+## Tweaks:
+Now you, the user, can change the temporary's path location by changing the
+content of a variable called `tmp_location`. This is where a directory will
+be created by the script, so each cut has a place to be put before they are
+joined together. After this process, the directory that was created will be
+removed. Note that the directory set by the `tmp_location` variable **won't** be
+deleted.
+
+
 
 # Installation
 
