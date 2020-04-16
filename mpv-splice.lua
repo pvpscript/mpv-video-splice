@@ -71,8 +71,8 @@
 -- Tweaks:
 --
 -- Now you, the user, can change the temporary's path location by changing the
--- variable below called 'tmp_location'. This is where a directory will be
--- created by the script, so each cut has a place to be put before they are
+-- content of a variable called 'tmp_location'. This is where a directory will
+-- be created by the script, so each cut has a place to be put before they are
 -- joined together. After this process, the directory that was created will be
 -- removed. Note that the directory set by the 'tmp_location' variable won't be
 -- deleted.
