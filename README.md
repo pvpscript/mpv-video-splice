@@ -53,7 +53,7 @@ that the process ended.
 
 **Note:** Every message that appears on the terminal has the **log level of 'info'**.
 
-## Environment Variables:
+## Environment Variables
 This script uses environment variables to allow the user to
 set the temporary location of the video cuts and for setting the location for
 the resulting video.
