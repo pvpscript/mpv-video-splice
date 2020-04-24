@@ -53,13 +53,19 @@ that the process ended.
 
 **Note:** Every message that appears on the terminal has the **log level of 'info'**.
 
-## Tweaks:
-Now you, the user, can change the temporary's path location by changing the
-content of a variable called `tmp_location`. This is where a directory will
-be created by the script, so each cut has a place to be put before they are
-joined together. After this process, the directory that was created will be
-removed. Note that the directory set by the `tmp_location` variable **won't** be
-deleted.
+## Environment Variables:
+This script uses environment variables to allow the user to
+set the temporary location of the video cuts and for setting the location for
+the resulting video.
+
+To set the temporary directory, set the variable MPV\_SPLICE\_TEMP;
+e.g.: `export MPV\_SPLICE\_TEMP="$HOME/temporary\_location"`
+
+To set the video output directory, set the variable MPV\_SPLICE\_OUTPUT;
+e.g.: `export MPV\_SPLICE\_OUTPUT="$HOME/output\_location"`
+
+**Make sure the directories set in the variables really exist, or else the
+script might fail.**
 
 
 

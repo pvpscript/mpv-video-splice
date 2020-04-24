@@ -18,7 +18,8 @@
 -- Then, all the slices from 1 to n are joined together, creating a new
 -- video.
 --
--- The output file will appear at the directory that the mpv command was ran.
+-- The output file will appear at the directory that the mpv command was ran,
+-- or in the environment variable set for it (see Environment variables below)
 --
 -- Note: This script prevents the mpv player from closing when the video ends,
 -- so that the slices don't get lost. Keep this in mind if there's the option
@@ -68,15 +69,20 @@
 -- -----------------------------------------------------------------------------
 --
 --
--- Tweaks:
+-- Environment Variables:
 --
--- Now you, the user, can change the temporary's path location by changing the
--- content of a variable called 'tmp_location'. This is where a directory will
--- be created by the script, so each cut has a place to be put before they are
--- joined together. After this process, the directory that was created will be
--- removed. Note that the directory set by the 'tmp_location' variable won't be
--- deleted.
+-- This script uses environment variables to allow the user to
+-- set the temporary location of the video cuts and for setting the location for
+-- the resulting video.
 --
+-- To set the temporary directory, set the variable MPV_SPLICE_TEMP;
+-- e.g.: export MPV_SPLICE_TEMP="$HOME/temporary_location"
+--
+-- To set the video output directory, set the variable MPV_SPLICE_OUTPUT;
+-- e.g.: export MPV_SPLICE_OUTPUT="$HOME/output_location"
+--
+-- Make sure the directories set in the variables really exist, or else the
+-- script might fail.
 --
 -- -----------------------------------------------------------------------------
 
