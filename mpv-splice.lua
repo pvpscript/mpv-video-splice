@@ -87,17 +87,24 @@ local mp = require 'mp'
 local msg = require 'mp.msg'
 
 --------------------------------------------------------------------------------
--- Those variables below can be tweaked at your will, but make sure you know
--- what you are doing.
+-- Default variables
 
-local tmp_location = "/tmp"
+local default_tmp_location = "/tmp"
+local default_output_location = mp.get_property("working-directory")
 
 --------------------------------------------------------------------------------
--- Don't make changes in the variables below, unless you are ABSOLUTELY sure
--- about how they work and want to make changes to the script's code.
 
 local concat_name = "concat.txt"
+
 local ffmpeg = "ffmpeg -hide_banner -loglevel warning"
+
+local tmp_location = os.getenv("MPV_SPLICE_TEMP")
+	and os.getenv("MPV_SPLICE_TEMP")
+	or default_tmp_location
+local output_location = os.getenv("MPV_SPLICE_OUTPUT")
+	and os.getenv("MPV_SPLICE_OUTPUT")
+	or default_output_location
+
 local times = {}
 local start_time = nil
 
@@ -174,7 +181,7 @@ function process_video()
 		end
 
 		local output_file = string.format("%s/%s_%s_cut.%s",
-			mp.get_property("working-directory"),
+			output_location,
 			mp.get_property("filename/no-ext"),
 			rnd_str, ext)
 
