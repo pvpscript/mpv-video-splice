@@ -200,15 +200,16 @@ function process_video()
 			local path = string.format("%s/%s_%d.%s",
 				tmp_dir, rnd_str, i, ext)
 			cat_file_ptr:write(string.format("file '%s'\n", path))
-			os.execute(string.format("%s -i \"%s\" -ss %s -to %s \"%s\"",
-				ffmpeg, input_file,
-				obj.t_start, obj.t_end,
+			os.execute(string.format("%s -ss %s -i \"%s\" -to %s " ..
+				"-c copy -copyts -avoid_negative_ts make_zero \"%s\"",
+				ffmpeg, obj.t_start, input_file, obj.t_end,
 				path))
 		end
 
 		cat_file_ptr:close()
 
-		cmd = string.format("%s -f concat -safe 0 -i \"%s\" -c copy \"%s\"",
+		cmd = string.format("%s -f concat -safe 0 -i \"%s\" " ..
+			"-c copy \"%s\"",
 			ffmpeg, cat_file_name, output_file)
 		os.execute(cmd)
 
