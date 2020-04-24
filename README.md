@@ -58,11 +58,13 @@ This script uses environment variables to allow the user to
 set the temporary location of the video cuts and for setting the location for
 the resulting video.
 
-To set the temporary directory, set the variable MPV\_SPLICE\_TEMP;
-e.g.: `export MPV\_SPLICE\_TEMP="$HOME/temporary\_location"`
+To set the temporary directory, set the variable `MPV_SPLICE_TEMP`;
 
-To set the video output directory, set the variable MPV\_SPLICE\_OUTPUT;
-e.g.: `export MPV\_SPLICE\_OUTPUT="$HOME/output\_location"`
+e.g.: `export MPV_SPLICE_TEMP="$HOME/temporary_location"`
+
+To set the video output directory, set the variable `MPV_SPLICE_OUTPUT`;
+
+e.g.: `export MPV_SPLICE_OUTPUT="$HOME/output_location"`
 
 **Make sure the directories set in the variables really exist, or else the
 script might fail.**
