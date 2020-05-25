@@ -52,15 +52,15 @@
 -- and delete the slice corresponding to the formed number.
 --
 -- Example 1: Deleting slice number 3
--- 	-> Ctrl + D 	# Start slice deletion mode
+-- 	-> Alt + D 	# Start slice deletion mode
 -- 	-> Alt + 3	# Concatenate number 3
--- 	-> Cltr + D	# Exit slice deletion mode
+-- 	-> Alt + D	# Exit slice deletion mode
 --
 -- Example 2> Deleting slice number 76
--- 	-> Cltr + D 	# Start slice deletion mode
+-- 	-> Alt + D 	# Start slice deletion mode
 -- 	-> Alt + 7	# Concatenate number 7
 -- 	-> Alt + 6	# Concatenate number 6
--- 	-> Ctrl + D	# Exit slice deletion mode
+-- 	-> Alt + D	# Exit slice deletion mode
 --
 -- To fire up ffmpeg, which will slice up the video and concatenate the slices
 -- together, press Alt + C. It's important that there are at least one
