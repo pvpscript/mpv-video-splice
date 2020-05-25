@@ -5,7 +5,7 @@ An mpv player script that helps you create a video out of cuts made in the curre
 
 ## Description
 This script provides the hability to create video slices by grabbing two
-timestamps, which generate a slice from timestamp A[i] to timestamp B[i],
+timestamps, which generate a slice from timestamp A to timestamp B,
 e.g.:
 	
 	-> Slice 1: 00:10:34.25 -> 00:15:00.00;
