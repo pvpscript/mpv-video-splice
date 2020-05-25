@@ -23,6 +23,10 @@ video.
 so that the slices don't get lost. Keep this in mind if there's the option
 `keep-open=no` in the current config file.
 
+**Note:** This script will also silence the terminal, so the script messages
+can be seen more clearly.
+
+
 ## Usage
 This section correspond to the shortcut keys provided by this script.
 
