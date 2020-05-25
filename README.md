@@ -24,14 +24,44 @@ so that the slices don't get lost. Keep this in mind if there's the option
 `keep-open=no` in the current config file.
 
 ## Usage
+This section correspond to the shortcut keys provided by this script.
+
+### Alt + T (Grab timestamp)
 In the video screen, press `Alt + T` to grab the first timestamp and then
 press `Alt + T` again to get the second timestamp. This process will generate
 a time range, which represents a video slice. Repeat this process to create
 more slices.
 
+### Alt + P (Print slices)
 To see all the slices made, press `Alt + P`. All of the slices will appear
 in the terminal in order of creation, with their corresponding timestamps.
+Incomplete slices will show up as `Slice N in progress`, where N is the
+slice number.
 
+### Alt + R (Reset unfinished slice)
+To reset an incomplete slice, press `Alt + R`. If the first part of a slice
+was created at the wrong time, this will reset the current slice.
+
+### Alt + D (Delete slice)
+To delete a whole slice, start the slice deletion mode by pressing `Alt + D`.
+When in this mode, it's possible to press `Alt + NUM`, where `NUM` is any
+number between 0 inclusive and 9 inclusive. For each `Alt + NUM` pressed, a
+number will be concatenated to make the final number referring to the slice 
+to be removed, then press `Alt + D` again to stop the slicing deletion mode
+and delete the slice corresponding to the formed number.
+
+Example 1: Deleting slice number 3
+	-> `Ctrl + D` 	# Start slice deletion mode
+	-> `Alt + 3`    # Concatenate number 3
+	-> `Cltr + D`	# Exit slice deletion mode
+
+Example 2: Deleting slice number 76
+	-> `Cltr + D` 	# Start slice deletion mode
+	-> `Alt + 7`    # Concatenate number 7
+	-> `Alt + 6`    # Concatenate number 6
+	-> `Ctrl + D`	# Exit slice deletion mode
+
+### Alt + C (Compiling final video)
 To fire up ffmpeg, which will slice up the video and concatenate the slices
 together, press `Alt + C`. It's important that there are at least one
 slice, otherwise no video will be created.

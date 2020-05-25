@@ -38,6 +38,29 @@
 --
 -- To see all the slices made, press Alt + P. All of the slices will appear
 -- in the terminal in order of creation, with their corresponding timestamps.
+-- Incomplete slices will show up as 'Slice N in progress', where N is the
+-- slice number.
+--
+-- To reset an incomplete slice, press Alt + R. If the first part of a slice
+-- was created at the wrong time, this will reset the current slice.
+--
+-- To delete a whole slice, start the slice deletion mode by pressing Alt + D.
+-- When in this mode, it's possible to press Alt + NUM, where NUM is any
+-- number between 0 inclusive and 9 inclusive. For each Alt + NUM pressed, a
+-- number will be concatenated to make the final number referring to the slice 
+-- to be removed, then press Alt + D again to stop the slicing deletion mode
+-- and delete the slice corresponding to the formed number.
+--
+-- Example 1: Deleting slice number 3
+-- 	-> Ctrl + D 	# Start slice deletion mode
+-- 	-> Alt + 3	# Concatenate number 3
+-- 	-> Cltr + D	# Exit slice deletion mode
+--
+-- Example 2> Deleting slice number 76
+-- 	-> Cltr + D 	# Start slice deletion mode
+-- 	-> Alt + 7	# Concatenate number 7
+-- 	-> Alt + 6	# Concatenate number 6
+-- 	-> Ctrl + D	# Exit slice deletion mode
 --
 -- To fire up ffmpeg, which will slice up the video and concatenate the slices
 -- together, press Alt + C. It's important that there are at least one
@@ -113,6 +136,7 @@ local output_location = os.getenv("MPV_SPLICE_OUTPUT")
 
 local times = {}
 local start_time = nil
+local remove_val = ""
 
 --------------------------------------------------------------------------------
 
@@ -143,25 +167,72 @@ end
 
 function put_time()
 	local time = get_time()
+	local message = ""
 
 	if not start_time then
 		start_time = time
+		message = "[START TIMESTAMP]"
 	else
-		times[#times+1] = {
+		--times[#times+1] = {
+		table.insert(times, {
 			t_start = start_time,
 			t_end = time
-		}
+		})
 		start_time = nil
+
+		message = "[END TIMESTAMP]"
 	end
 
-	notify(2000, "Selected time: ", time)
+	notify(2000, message, ": ", time)
 end
 
 function show_times()
 	notify(2000, "Total cuts: ", #times)
 
 	for i, obj in ipairs(times) do
-		msg.info(i, ": ", obj.t_start, " -> ", obj.t_end)
+		msg.info("Slice", i, ": ", obj.t_start, " -> ", obj.t_end)
+	end
+	if start_time then
+		notify(2000, "Slice ", #times+1, " in progress.")
+	end
+end
+
+function reset_current_slice()
+	if start_time then
+		notify(2000, "Slice ", #times+1, " reseted.")
+
+		start_time = nil
+	end
+end
+
+function delete_slice()
+	if remove_val == "" then
+		notify(2000, "Entered slice deletion mode.")
+		-- Add shortcut keys to the interval {0..9}.
+		for i=0,9,1 do
+			mp.add_key_binding("Alt+" .. i, "num_key_" .. i,
+				function()
+					remove_val = remove_val .. i
+					notify(1000, "Slice to remove: "
+						.. remove_val)
+				end
+			)
+		end
+	else
+		-- Remove previously added shortcut keys.
+		for i=0,9,1 do
+			mp.remove_key_binding("num_key_" .. i)
+		end
+
+		remove_num = tonumber(remove_val)
+		if #times >= remove_num and remove_num > 0 then
+			table.remove(times, remove_num)
+			notify(2000, "Removed slice ", remove_num)
+		end
+
+		remove_val = ""
+
+		msg.info("Exited slice deletion mode.")
 	end
 end
 
@@ -171,6 +242,7 @@ function process_video()
 
 	local pieces = {}
 
+	-- Better seed randomization
 	math.randomseed(os.time())
 	math.random(); math.random(); math.random()
 
@@ -226,3 +298,5 @@ mp.set_property("keep-open", "yes") -- Prevent mpv from exiting when the video e
 mp.add_key_binding('Alt+t', "put_time", put_time)
 mp.add_key_binding('Alt+p', "show_times", show_times)
 mp.add_key_binding('Alt+c', "process_video", process_video)
+mp.add_key_binding('Alt+r', "reset_current_slice", reset_current_slice)
+mp.add_key_binding('Alt+d', "delete_slice", delete_slice)
