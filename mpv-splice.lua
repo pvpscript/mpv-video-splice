@@ -208,6 +208,7 @@ end
 function delete_slice()
 	if remove_val == "" then
 		notify(2000, "Entered slice deletion mode.")
+
 		-- Add shortcut keys to the interval {0..9}.
 		for i=0,9,1 do
 			mp.add_key_binding("Alt+" .. i, "num_key_" .. i,
@@ -294,6 +295,7 @@ function process_video()
 end
 
 mp.set_property("keep-open", "yes") -- Prevent mpv from exiting when the video ends
+mp.set_property("quiet", "yes") -- Silence terminal.
 
 mp.add_key_binding('Alt+t', "put_time", put_time)
 mp.add_key_binding('Alt+p', "show_times", show_times)
