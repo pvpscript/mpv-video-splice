@@ -267,7 +267,6 @@ function process_video()
 	math.random(); math.random(); math.random()
 
 	if times[#times] then
---		local tmp_dir = io.popen(string.format("mktemp -d -p %s",
 		local tmp_dir = io.popen(string.format("mktemp -d -t %s",
 			splice_options.tmp_location)):read("*l")
 		local input_file = mp.get_property("path")
