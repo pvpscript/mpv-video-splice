@@ -32,7 +32,7 @@
 --
 --
 -- Usage:
--- 
+--
 -- In the video screen, press Alt + T to grab the first timestamp and then
 -- press Alt + T again to get the second timestamp. This process will generate
 -- a time range, which represents a video slice. Repeat this process to create
@@ -49,7 +49,7 @@
 -- To delete a whole slice, start the slice deletion mode by pressing Alt + D.
 -- When in this mode, it's possible to press Alt + NUM, where NUM is any
 -- number between 0 inclusive and 9 inclusive. For each Alt + NUM pressed, a
--- number will be concatenated to make the final number referring to the slice 
+-- number will be concatenated to make the final number referring to the slice
 -- to be removed, then press Alt + D again to stop the slicing deletion mode
 -- and delete the slice corresponding to the formed number.
 --
@@ -79,7 +79,7 @@
 --
 -- Everytime a timestamp is grabbed, a text will appear on the screen showing
 -- the selected time.
--- When Alt + P is pressed, besides showing the slices in the terminal, 
+-- When Alt + P is pressed, besides showing the slices in the terminal,
 -- it will also show on the screen the total number of cuts (or slices)
 -- that were made.
 -- When the actual cutting and joining process begins, a message will be shown
@@ -116,25 +116,27 @@
 
 local mp = require 'mp'
 local msg = require 'mp.msg'
+local opt = require 'mp.options'
 
 --------------------------------------------------------------------------------
 -- Default variables
 
+local SCRIPT_NAME = "mpv-splice"
 local default_tmp_location = "/tmp"
 local default_output_location = mp.get_property("working-directory")
 
 --------------------------------------------------------------------------------
 
+local splice_options = {
+	tmp_location = os.getenv("MPV_SPLICE_TEMP") and os.getenv("MPV_SPLICE_TEMP") or default_tmp_location
+	output_location = os.getenv("MPV_SPLICE_OUTPUT") and os.getenv("MPV_SPLICE_OUTPUT") or default_output_location
+}
+opt.read_options(splice_options, SCRIPT_NAME)
+
+
 local concat_name = "concat.txt"
 
 local ffmpeg = "ffmpeg -hide_banner -loglevel warning"
-
-local tmp_location = os.getenv("MPV_SPLICE_TEMP")
-	and os.getenv("MPV_SPLICE_TEMP")
-	or default_tmp_location
-local output_location = os.getenv("MPV_SPLICE_OUTPUT")
-	and os.getenv("MPV_SPLICE_OUTPUT")
-	or default_output_location
 
 local times = {}
 local start_time = nil
@@ -265,8 +267,8 @@ function process_video()
 	math.random(); math.random(); math.random()
 
 	if times[#times] then
-		local tmp_dir = io.popen(string.format("mktemp -d -p %s",
-			tmp_location)):read("*l")
+		local tmp_dir = io.popen(string.format("mktemp -d -t %s",
+			splice_options.tmp_location)):read("*l")
 		local input_file = mp.get_property("path")
 		local ext = string.gmatch(input_file, ".*%.(.*)$")()
 
@@ -277,7 +279,7 @@ function process_video()
 		end
 
 		local output_file = string.format("%s/%s_%s_cut.%s",
-			output_location,
+			splice_options.output_location,
 			mp.get_property("filename/no-ext"),
 			rnd_str, ext)
 
