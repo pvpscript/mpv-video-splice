@@ -122,13 +122,13 @@ local opt = require 'mp.options'
 -- Default variables
 
 local SCRIPT_NAME = "mpv-splice"
-local default_tmp_location = "/tmp"
+local default_tmp_location = "~/tmpXXX"
 local default_output_location = mp.get_property("working-directory")
 
 --------------------------------------------------------------------------------
 
 local splice_options = {
-	tmp_location = os.getenv("MPV_SPLICE_TEMP") and os.getenv("MPV_SPLICE_TEMP") or default_tmp_location
+	tmp_location = os.getenv("MPV_SPLICE_TEMP") and os.getenv("MPV_SPLICE_TEMP") or default_tmp_location,
 	output_location = os.getenv("MPV_SPLICE_OUTPUT") and os.getenv("MPV_SPLICE_OUTPUT") or default_output_location
 }
 opt.read_options(splice_options, SCRIPT_NAME)
@@ -267,7 +267,7 @@ function process_video()
 	math.random(); math.random(); math.random()
 
 	if times[#times] then
-		local tmp_dir = io.popen(string.format("mktemp -d -t %s",
+		local tmp_dir = io.popen(string.format("mktemp -d %s",
 			splice_options.tmp_location)):read("*l")
 		local input_file = mp.get_property("path")
 		local ext = string.gmatch(input_file, ".*%.(.*)$")()
