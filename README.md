@@ -1,5 +1,6 @@
 # mpv-video-splice
-An mpv player script that helps you create a video out of cuts made in the current playing video.
+An mpv player script that helps you create a video out of 
+cuts made in the current playing video.
 
 **Requires: ffmpeg**
 
@@ -29,6 +30,15 @@ can be seen more clearly.
 
 ## Usage
 This section correspond to the shortcut keys provided by this script.
+
+### Alt + E (Toggle encoding)
+Only affects local files, affects the speed and accuracy of cuts.
+By default, the script copies the video codec (encoding == off)
+which makes cutting near instant but is also imprecise,
+because the cut has to start at a keyframe.
+You might get a few seconds extra at the beginning of the cut.
+Toggling this off will slow down the process tremendously
+but will allow for perfectly precise cuts.
 
 ### Alt + T (Grab timestamp)
 In the video screen, press `Alt + T` to grab the first timestamp and then
