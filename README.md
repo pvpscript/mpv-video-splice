@@ -31,7 +31,7 @@ can be seen more clearly.
 ## Usage
 This section correspond to the shortcut keys provided by this script.
 
-### Alt + E (Toggle encoding)
+### Alt + e (Toggle encoding)
 Only affects local files, affects the speed and accuracy of cuts.
 By default, the script copies the video codec (encoding == off)
 which makes cutting near instant but is also imprecise,
@@ -40,23 +40,26 @@ You might get a few seconds extra at the beginning of the cut.
 Toggling this off will slow down the process tremendously
 but will allow for perfectly precise cuts.
 
-### Alt + T (Grab timestamp)
+### Alt + u (Toggle upload)
+Toggle uploading the edited video to configured destination.
+
+### Alt + t (Grab timestamp)
 In the video screen, press `Alt + T` to grab the first timestamp and then
 press `Alt + T` again to get the second timestamp. This process will generate
 a time range, which represents a video slice. Repeat this process to create
 more slices.
 
-### Alt + P (Print slices)
+### Alt + p (Print slices)
 To see all the slices made, press `Alt + P`. All of the slices will appear
-in the terminal in order of creation, with their corresponding timestamps.
-Incomplete slices will show up as `Slice N in progress`, where N is the
-slice number.
+in the terminal in order of creation and on screen,
+with their corresponding timestamps.
+Incomplete slices will show up as `N: timestamp -> in progress...`.
 
-### Alt + R (Reset unfinished slice)
+### Alt + r (Reset unfinished slice)
 To reset an incomplete slice, press `Alt + R`. If the first part of a slice
 was created at the wrong time, this will reset the current slice.
 
-### Alt + D (Delete slice)
+### Alt + d (Delete slice)
 To delete a whole slice, start the slice deletion mode by pressing `Alt + D`.
 When in this mode, it's possible to press `Alt + NUM`, where `NUM` is any
 number between 0 inclusive and 9 inclusive. For each `Alt + NUM` pressed, a
@@ -75,7 +78,7 @@ Example 2: Deleting slice number 76
 * `Alt + 6`	# Concatenate number 6
 * `Alt + D`	# Exit slice deletion mode
 
-### Alt + C (Compiling final video)
+### Alt + c (Compiling final video)
 To fire up ffmpeg, which will slice up the video and concatenate the slices
 together, press `Alt + C`. It's important that there are at least one
 slice, otherwise no video will be created.
