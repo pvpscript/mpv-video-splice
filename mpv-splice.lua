@@ -266,8 +266,8 @@ local function process_video()
 		else
 			cat_file_ptr:write(string.format("file '%s'\n", path))
 			if (do_encode == "yes") then
-				os.execute(string.format("%s -ss %s -i \"%s\" -to %s \"%s\"",
-				ffmpeg, obj.t_start, input_file, obj.t_end, path))
+				os.execute(string.format("%s -ss %s -to %s -i \"%s\" \"%s\"",
+				ffmpeg, obj.t_start, obj.t_end, input_file, path))
 			else
 				os.execute(string.format("%s -ss %s -i \"%s\" -to %s " ..
 				"-c copy -copyts -avoid_negative_ts make_zero \"%s\"",
