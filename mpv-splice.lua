@@ -241,8 +241,7 @@ local function process_video()
 		rnd_str = rnd_str .. alphabet:sub(rnd_index, rnd_index)
 	end
 
-	local output_file = string.format("%s/%s_%s_cut.%s", splice_options.output_location,
-			mp.get_property("filename/no-ext"), rnd_str, splice_options.output_format)
+	local output_title = mp.get_property("filename/no-ext")
 
 	local cat_file_name = string.format("%s/%s", tmp_dir, "concat.txt")
 	local cat_file_ptr = io.open(cat_file_name, "w")
@@ -257,8 +256,7 @@ local function process_video()
 			print ("ONLINE VIDEO DETECTED")
 			path = string.format("%s/%s_%d." .. splice_options.output_format,
 			tmp_dir, rnd_str, i)
-			output_file = string.format("%s/%s_cut." .. splice_options.output_format,
-			splice_options.output_location, mp.get_property("media-title"))
+			output_title = mp.get_property("media-title")
 			local youtubedl = "youtube-dl --external-downloader ffmpeg --external-downloader-args "
 			cat_file_ptr:write(string.format("file '%s'\n", path))
 			os.execute(string.format("%s \"-ss %s -to %s\" -f best \"%s\" -o %s",
@@ -278,8 +276,11 @@ local function process_video()
 
 		cat_file_ptr:close()
 
+		output_title = output_title:gsub("[/|$()* ]", "_")
+		local output_file = string.format("%s/%s_%s_cut." .. splice_options.output_format,
+			splice_options.output_location, output_title, rnd_str)
 		output_file = output_file:gsub("\"", "\\\"")
-		output_file = output_file:gsub(" ", "_")
+		output_file = output_file:gsub(" ", "\\ ")
 		local cmd = string.format("%s -f concat -safe 0 -i \"%s\" " .. "-c copy %s", ffmpeg, cat_file_name, output_file )
 		print(cmd)
 		os.execute(cmd)
