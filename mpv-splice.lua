@@ -25,6 +25,9 @@ local do_encode = "no"
 --------------------------------------------------------------------------------
 
 local splice_options = {
+	youtubedl_command = "yt-dlp --external-downloader ffmpeg --external-downloader-args",
+	ffmpeg_command = "ffmpeg -hide_banner -loglevel warning",
+
 	bind_put_time = 'Alt+t',
 	bind_show_times = 'Alt+p',
 	bind_process_video = 'Alt+c',
@@ -45,9 +48,11 @@ local splice_options = {
 	online_pattern = "",
 	online_do_copy_to_clipboard = "no",
 }
+
 opt.read_options(splice_options, SCRIPT_NAME)
 
-local ffmpeg = "ffmpeg -hide_banner -loglevel warning"
+local youtubedl = splice_options.youtubedl_command
+local ffmpeg = splice_options.ffmpeg_command
 
 local times = {}
 local start_time = nil
@@ -58,7 +63,7 @@ local exit_time = 0
 --------------------------------------------------------------------------------
 
 local function notify_without_stdout(duration, ...)
-	local args = {...}
+	local args = { ... }
 	local text = ""
 
 	for i, v in ipairs(args) do
@@ -66,7 +71,7 @@ local function notify_without_stdout(duration, ...)
 	end
 
 	mp.command(string.format("show-text \"%s\" %d 1",
-	text, duration))
+		text, duration))
 	return text
 end
 
@@ -82,7 +87,7 @@ local function get_time()
 	local mins = math.floor((time_in_secs - hours * 3600) / 60)
 	local secs = time_in_secs - hours * 3600 - mins * 60
 
-	local fmt_time = string.format('%02d:%02d:%05.2f', hours, mins, secs)
+	local fmt_time = string.format('%02d:%02d:%05.3f', hours, mins, secs)
 
 	return fmt_time
 end
@@ -167,7 +172,7 @@ end
 
 local function reset_current_slice()
 	if start_time then
-		notify(2000, "Slice ", #times+1, " reseted.")
+		notify(2000, "Slice ", #times + 1, " reseted.")
 
 		start_time = nil
 	end
@@ -178,12 +183,12 @@ local function delete_slice()
 		notify(2000, "Entered slice deletion mode.")
 
 		-- Add shortcut keys to the interval {0..9}.
-		for i=0,9,1 do
+		for i = 0, 9, 1 do
 			mp.add_key_binding("Alt+" .. i, "num_key_" .. i,
-			function()
-				remove_val = remove_val .. i
-				notify(1000, "Slice to remove: " .. remove_val)
-			end
+				  function()
+					  remove_val = remove_val .. i
+					  notify(1000, "Slice to remove: " .. remove_val)
+				  end
 			)
 		end
 	else
@@ -219,6 +224,10 @@ local function prevent_quit(name)
 	end
 end
 
+local function write_to_cat_file(cat_file_ptr, path)
+	cat_file_ptr:write(string.format("file '%s'\n", path))
+end
+
 local function process_video()
 	local alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 	local rnd_size = 10
@@ -249,66 +258,71 @@ local function process_video()
 	notify(2000, "Process started!")
 
 	-- Getting the individual clips before concating them.
+	path = ""
+	is_online_video = string.find(input_file, "https://")
 	for i, obj in ipairs(times) do
-		local path = string.format("%s/%s_%d.%s",
-		tmp_dir, rnd_str, i, splice_options.output_format)
-		if (string.find(input_file, "https://")) then
-			print ("ONLINE VIDEO DETECTED")
+		if (is_online_video) then -- ONLINE 
+			print("ONLINE VIDEO DETECTED")
 			path = string.format("%s/%s_%d." .. splice_options.output_format,
-			tmp_dir, rnd_str, i)
+					tmp_dir, rnd_str, i)
 			output_title = mp.get_property("media-title")
-			local youtubedl = "youtube-dl --external-downloader ffmpeg --external-downloader-args "
-			cat_file_ptr:write(string.format("file '%s'\n", path))
-			os.execute(string.format("%s \"-ss %s -to %s\" -f best \"%s\" -o %s",
-			youtubedl, obj.t_start, obj.t_end, input_file, path))
-		else
-			cat_file_ptr:write(string.format("file '%s'\n", path))
-			if (do_encode == "yes") then
+			write_to_cat_file(cat_file_ptr, path)
+
+			notify(2000, "Downloading")
+			os.execute(string.format("%s \"-ss %s -to %s -loglevel warning\" -f best \"%s\" -o %s",
+				youtubedl, obj.t_start, obj.t_end, input_file, path))
+			notify(2000, "Download complete")
+		else -- OFFLINE
+			local path = string.format("%s/%s_%d.%s",
+					tmp_dir, rnd_str, i, splice_options.output_format)
+			write_to_cat_file(cat_file_ptr, path)
+
+			if (do_encode == "yes") then -- Reencode the video
 				os.execute(string.format("%s -ss %s -to %s -i \"%s\" \"%s\"",
-				ffmpeg, obj.t_start, obj.t_end, input_file, path))
+						ffmpeg, obj.t_start, obj.t_end, input_file, path))
 			else
 				os.execute(string.format("%s -ss %s -i \"%s\" -to %s " ..
-				"-c copy -copyts -avoid_negative_ts make_zero \"%s\"",
-				ffmpeg, obj.t_start, input_file, obj.t_end, path))
-			end
-			notify( 2000, "Download complete" )
-		end
-
-		cat_file_ptr:close()
-
-		output_title = output_title:gsub("[/|$()* ]", "_")
-		local output_file = string.format("%s/%s_%s_cut." .. splice_options.output_format,
-			splice_options.output_location, output_title, rnd_str)
-		output_file = output_file:gsub("\"", "\\\"")
-		output_file = output_file:gsub(" ", "\\ ")
-		local cmd = string.format("%s -f concat -safe 0 -i \"%s\" " .. "-c copy %s", ffmpeg, cat_file_name, output_file )
-		print(cmd)
-		os.execute(cmd)
-		if (do_upload ~= "yes") then
-      notify(10000, "Local file saved as: ", output_file)
-		else
-			notify(10000, "Local file saved as: ", output_file .. "\nUploading video...")
-			print("Uploading video...")
-			local cmd_online = "%s"
-			if (splice_options.online_do_copy_to_clipboard) then
-				cmd_online = "printf \"" .. splice_options.online_resulting_url .. "\" $(%s\" | jq -r \" " ..
-				splice_options.online_pattern .. "\") | xclip -selection clipboard"
-			end
-			cmd_online = string.format(cmd_online, "curl --progress-bar -u \"" ..
-			splice_options.online_secret .. "\" -F \"file=@" .. output_file ..
-			"\" \"" .. splice_options.online_upload_url)
-			print("Command to execute: " .. cmd_online)
-			os.execute(cmd_online);
-			if (splice_options.online_do_copy_to_clipboard == "yes") then
-				notify(10000, "Upload complete, link copied to clipboard")
-			else
-				notify(10000, "Upload complete")
+						"-c copy -copyts -avoid_negative_ts make_zero \"%s\"",
+						ffmpeg, obj.t_start, input_file, obj.t_end, path))
 			end
 		end
-
-		os.execute(string.format("rm -rf %s", tmp_dir))
-		-- msg.info("Temporary directory removed!")
 	end
+
+	output_title = output_title:gsub("[/|$()* ]", "_")
+	local output_file = string.format("%s/%s_%s_cut." .. splice_options.output_format,
+		splice_options.output_location, output_title, rnd_str)
+	output_file = output_file:gsub("\"", "\\\"")
+	output_file = output_file:gsub(" ", "\\ ")
+	cat_file_ptr:close()
+
+	local cmd = string.format("%s -f concat -safe 0 -i \"%s\" " .. "-c copy %s", ffmpeg, cat_file_name, output_file)
+	print(cmd)
+	os.execute(cmd)
+	if (do_upload ~= "yes") then
+		notify(10000, "Local file saved as: ", output_file)
+	else
+		notify(10000, "Local file saved as: ", output_file .. "\nUploading video...")
+		print("Uploading video...")
+		local cmd_online = "%s"
+		if (splice_options.online_do_copy_to_clipboard) then
+			cmd_online = "printf \"" .. splice_options.online_resulting_url .. "\" $(%s\" | jq -r \" " ..
+					splice_options.online_pattern .. "\") | xclip -selection clipboard"
+		end
+		cmd_online = string.format(cmd_online, "curl --progress-bar -u \"" ..
+				splice_options.online_secret .. "\" -F \"file=@" .. output_file ..
+				"\" \"" .. splice_options.online_upload_url)
+		print("Command to execute: " .. cmd_online)
+		os.execute(cmd_online);
+		if (splice_options.online_do_copy_to_clipboard == "yes") then
+			notify(10000, "Upload complete, link copied to clipboard")
+		else
+			notify(10000, "Upload complete")
+		end
+	end
+
+	os.execute(string.format("rm %s/*", tmp_dir))
+	os.execute(string.format("rmdir %s", tmp_dir))
+	-- msg.info("Temporary directory removed!")
 end
 
 do_upload = splice_options.do_upload
