@@ -353,13 +353,12 @@ local quit = {
 
     prevent_quit = function(self, pieces, name)
         if pieces > 0 then
-            if self._exit_count > 1 then
+            if self._exit_count >= 1 then
                 mp.command(name)
             else
+                notify("There are timestamp pieces set. Press again to quit.", 3)
                 self._exit_count = self._exit_count + 1
             end
-
-            notify("There are timestamp pieces set. Press again to quit.", 3)
         else
             mp.command(name)
         end
