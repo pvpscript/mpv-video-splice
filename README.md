@@ -111,3 +111,10 @@ To install this script, simply add it to your script folder, located at
 `$HOME/.config/mpv/scripts`
 
 When the mpv player gets started up, the script will be executed and will be ready to use.
+
+# TODO
+- Update "environment variables" section to reflect the new use of config
+- Describe how the code was rewritten (inspired by http://lua-users.org/wiki/ObjectOrientationTutorial) 
+- Add an instalation section for windows
+- Create a TL;DR for the usage
+- The last part of the code can still be further improved by using the table method I went for.
