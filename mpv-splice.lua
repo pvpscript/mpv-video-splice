@@ -143,6 +143,8 @@ system_dependent = {
     tmp_path = _os == "unix" and "/tmp" or "%LOCALAPPDATA%\\Temp",
 
     mkdir = _os == "unix" and "mkdir" or "md",
+
+    rm = _os == "unix" and "rm -rf" or "rd /s /q",
 }
 
 --------------------------------------------------------------------------------
@@ -540,7 +542,12 @@ local function concat_pieces(cat_file_path, output_file)
 end
 
 local function cleanup(path)
-    os.execute(string.format("rm -rf %s", path))
+    cmd = string.format(
+        "%s %s",
+        system_dependent.rm, path
+    )
+    os.execute(cmd)
+
     msg.info(string.format("Directory \"%s\" removed!", path))
 end
 
