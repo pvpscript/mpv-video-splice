@@ -120,26 +120,18 @@ local opt = require 'mp.options'
 local utils = require 'mp.utils'
 
 --------------------------------------------------------------------------------
--- Setup config
-
-local SCRIPT_NAME = "video-splice"
-
-local config = {
-    output_path = mp.get_property("working-directory"),
-    concat_file_name = "concat",
-
-    ffmpeg_cmd = "ffmpeg -hide_banner -loglevel warning",
-    ffmpeg_filter = "-c copy -copyts -avoid_negative_ts make_zero",
-}
-opt.read_options(config, SCRIPT_NAME)
-
---------------------------------------------------------------------------------
 -- Setup os dependent stuff
 
 -- Not the best way to check OS, but it should work
 local _os = package.config:sub(1, 1) == "/" and "unix" or "windows"
 
+local _default_output_path = mp.get_property("working-directory")
+
 system_dependent = {
+    default_output_path = _os == "unix"
+                                 and _default_output_path
+                                 or _default_output_path:gsub("\\", "/"),
+
     tmp_path = _os == "unix"
                       and "/tmp"
                       or string.format("%s/Temp", os.getenv("LOCALAPPDATA"):gsub("\\", "/")),
@@ -147,11 +139,23 @@ system_dependent = {
     mkdir = _os == "unix" and "mkdir" or "md",
 
     rm = _os == "unix" and "rm -rf" or "rd /s /q",
-	
-    output_path = _os == "unix"
-                         and config.output_path
-                         or config.output_path:gsub("\\", "/"),
 }
+
+--------------------------------------------------------------------------------
+-- Setup config
+
+local SCRIPT_NAME = "mpv-splice"
+
+local config = {
+    concat_file_name = "concat",
+
+    ffmpeg_cmd = "ffmpeg -hide_banner -loglevel warning",
+    ffmpeg_filter = "-c copy -copyts -avoid_negative_ts make_zero",
+
+    tmp_path = system_dependent.tmp_path,
+    output_path = system_dependent.default_output_path,
+}
+opt.read_options(config, SCRIPT_NAME)
 
 --------------------------------------------------------------------------------
 
@@ -501,7 +505,7 @@ local function output_file_path(file_name, ext)
         file_name, random_string, ext
     )
 
-    return utils.join_path(system_dependent.output_path, output_file)
+    return utils.join_path(config.output_path, output_file)
 end
 
 local function make_cut_path(tmp_path, piece_index, ext)
@@ -559,7 +563,7 @@ end
 function process_video()
     local file_info = file_info()
     local output_file = output_file_path(file_info.name_only, file_info.ext)
-    local tmp_path = make_temp_dir(system_dependent.tmp_path)
+    local tmp_path = make_temp_dir(config.tmp_path)
 
     -- Make concat file
     concat_file:create(tmp_path, config.concat_file_name)
