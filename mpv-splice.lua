@@ -140,11 +140,17 @@ opt.read_options(config, SCRIPT_NAME)
 local _os = package.config:sub(1, 1) == "/" and "unix" or "windows"
 
 system_dependent = {
-    tmp_path = _os == "unix" and "/tmp" or "%LOCALAPPDATA%\\Temp",
+    tmp_path = _os == "unix"
+                      and "/tmp"
+                      or string.format("%s/Temp", os.getenv("LOCALAPPDATA"):gsub("\\", "/")),
 
     mkdir = _os == "unix" and "mkdir" or "md",
 
     rm = _os == "unix" and "rm -rf" or "rd /s /q",
+	
+    output_path = _os == "unix"
+                         and config.output_path
+                         or config.output_path:gsub("\\", "/"),
 }
 
 --------------------------------------------------------------------------------
@@ -472,7 +478,7 @@ local function make_temp_dir(tmp_path)
     local full_tmp_path = utils.join_path(tmp_path, tmp_path_name)
 
     local mkdir_cmd = string.format(
-        "%s %s 2>&1",
+        "%s \"%s\" 2>&1",
         system_dependent.mkdir, full_tmp_path
     )
 
@@ -495,7 +501,7 @@ local function output_file_path(file_name, ext)
         file_name, random_string, ext
     )
 
-    return utils.join_path(config.output_path, output_file)
+    return utils.join_path(system_dependent.output_path, output_file)
 end
 
 local function make_cut_path(tmp_path, piece_index, ext)
@@ -542,7 +548,7 @@ end
 
 local function cleanup(path)
     cmd = string.format(
-        "%s %s",
+        "%s \"%s\"",
         system_dependent.rm, path
     )
     os.execute(cmd)
