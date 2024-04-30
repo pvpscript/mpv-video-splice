@@ -180,16 +180,16 @@ hello = {
 
     _capitalize = function(self)
         return self._private_value:upper()
-    end
+    end,
 
     say_hello = function(self, name)
-        local message = self._capitalize() .. " My name is: " .. name
+        local message = self:_capitalize() .. " My name is: " .. name
 
         print(message)
-    end
+    end,
 }
 
-hello.say_hello("pvpscript") -- HELLO, WORLD! My name is: pvpscript
+hello:say_hello("pvpscript") -- HELLO, WORLD! My name is: pvpscript
 ```
 
 # TODO
