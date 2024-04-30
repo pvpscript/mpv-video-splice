@@ -142,7 +142,7 @@ Also, the original video file **won't** be affected by the cutting.
 | Shortcut key | Action |
 | ------------ | ------ |
 | Alt + T      | Grab timestamp |
-| Alt + P      | Print slices |
+| Alt + P      | Print slices count |
 | Alt + R      | Reset unfinished slice |
 | Alt + D      | Enter/Exit slice deletion mode |
 | Alt + 1..9   | Pick a slice number when in slice deletion mode |
